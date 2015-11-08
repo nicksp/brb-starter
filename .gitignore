@@ -1,0 +1,17 @@
+# OS
+.DS_STORE
+Thumbs.db
+
+# Logs
+logs
+*.log
+
+# Include when developing application packages.
+.idea
+*.iml
+
+/dist/
+node_modules/
+
+# Ignore npm debug log
+npm-debug.log
