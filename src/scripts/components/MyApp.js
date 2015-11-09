@@ -10,16 +10,15 @@
 
 const React = require('react');
 
-let MyApp = React.createClass({
+module.exports = React.createClass({
   render: function() {
     return (
       <div>
-        <h1>MyApp component main view.</h1>
+        <h1>MyApp component main view</h1>
+        <small>(/src/scripts/components/MyApp.js)</small>
       </div>
     );
   }
 });
-
-module.exports = MyApp;
 
 /* jshint ignore:end */

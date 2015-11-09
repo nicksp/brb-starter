@@ -21,7 +21,6 @@ var browserSync = require('browser-sync').create();
 
 // Optional dependencies
 var jshint = require('gulp-jshint');
-var stylish = require('jshint-stylish');
 var sass = require('gulp-sass');
 var autoprefixer = require('gulp-autoprefixer');
 var uglify = require('gulp-uglify');
@@ -79,11 +78,17 @@ var banner = [
 
 function handleErrors() {
   var args = Array.prototype.slice.call(arguments);
+
+  // Send error to notification center with gulp-notify
   notify.onError({
     title: 'Compile Error',
     message: '<%= error.message %>'
   }).apply(this, args);
-  this.emit('end'); // Keep gulp from hanging on this task
+
+  // Keep gulp from hanging on this task
+  if (typeof this.emit === 'function') {
+    this.emit('end');
+  }
 }
 
 function buildScript(file, watch) {
@@ -133,7 +138,7 @@ function buildScript(file, watch) {
 }
 
 /**
- * Gulp Taks
+ * Gulp Tasks
  */
 
 gulp.task('clean', function() {
@@ -154,7 +159,7 @@ gulp.task('clean-styles', function() {
   Linting
 */
 gulp.task('lint', function() {
-  gulp.src(`${SRC_DIR}/${SCRIPTS_FOLDER}/**/*`)
+  gulp.src(['gulpfile.js', `${SRC_DIR}/${SCRIPTS_FOLDER}/**/*`])
     .pipe(plumber())
     .pipe(jshint())
     .pipe(jshint.reporter('jshint-stylish'));
@@ -223,19 +228,35 @@ gulp.task('browser-sync', function() {
   });
 });
 
-gulp.task('default', ['clean'], function() {
+/*
+  Watch
+*/
+gulp.task('watch', function() {
+
+  gulp.watch(`${SRC_DIR}/**/*.html`, ['build-html']);
+  gulp.watch(`${SRC_DIR}/${CSS_FOLDER}/**/*`, function() {
+    runSequence('clean-styles', 'build-css', 'build-html');
+  });
+  gulp.watch(`${SRC_DIR}/${IMAGES_FOLDER}/**/*`, ['images',]);
+
+  // Browserify watch for JS changes
+  return buildScript(ENTRY_FILE, true);
+});
+
+/**
+ * Custom Tasks
+ */
+
+gulp.task('build', ['clean'], function() {
   runSequence(
     'lint',
     ['images', 'build-css', 'build-js'],
-    'build-html',
-    'browser-sync'
+    'build-html'
   );
-
-  gulp.watch(`${SRC_DIR}/**/*.html`, ['build-html']); // gulp watch for html changes
-  gulp.watch(`${SRC_DIR}/${CSS_FOLDER}/**/*`, function() {
-    runSequence('clean-styles', 'build-css', 'build-html');
-  }); // gulp watch for css changes
-  gulp.watch(`${SRC_DIR}/${IMAGES_FOLDER}/**/*`, ['images',]); // gulp watch for images changes
-
-  return buildScript(ENTRY_FILE, true); // browserify watch for JS changes
 });
+
+gulp.task('default', [
+  'build',
+  'browser-sync',
+  'watch'
+]);
