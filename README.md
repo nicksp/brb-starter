@@ -1,5 +1,5 @@
 # Gulp.js Boilerplate
-Opinionated gulp build environment for front-end web development using `Browserify`, `Babel`, `JSX/React` and `Browsersync` to create a streamlined development process with minimal additional configuration required.
+Opinionated `Gulp` build environment for frontend web development using `Browserify` to produce bundles for scripts, `React/JSX` and `Browsersync` to create a streamlined development process with minimal additional configuration required. Using the `Babel`'s `Babelify` transform, `ES6` code is transpiled to work in all browsers.
 
 ### Dependencies
 
